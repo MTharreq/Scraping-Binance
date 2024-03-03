@@ -19,6 +19,18 @@ function getCurrentDateTime() {
   return [date, month, year, hours, minutes, seconds];
 }
 
+async function getElementTexts(page, selector) {
+  const elementTexts = await page.$$eval(selector, (els) =>
+    els.map((el) => el.textContent)
+  );
+
+  // Remove half of the index cus idk why :/
+  const halfLength = Math.ceil(elementTexts.length / 2);
+  elementTexts.splice(-halfLength);
+
+  return elementTexts;
+}
+
 function findMatchingSentences(elementTexts, userInput) {
   return elementTexts
     .map((text) => {
@@ -29,29 +41,17 @@ function findMatchingSentences(elementTexts, userInput) {
 }
 
 async function test() {
-  const browser = await playwright.chromium.launch({ headless: false }); // if true, browser will run in background
+  const browser = await playwright.chromium.launch({ headless: true }); // if true, browser will run in background
   const page = await browser.newPage();
 
   while (true) {
-    // Get current time
-    const [dd, mm, yy, h, m, s] = getCurrentDateTime();
-
     await page.goto(url);
-
-    // Get a list of element div
-    const elementTexts = await page.$$eval("div.css-1yxx6id", (els) =>
-      els.map((el) => el.textContent)
-    );
-
-    // Remove half of the index cus idk why :/
-    const halfLength = Math.ceil(elementTexts.length / 2);
-    elementTexts.splice(-halfLength);
-
+    const [dd, mm, yy, h, m, s] = getCurrentDateTime();
+    const elementTexts = await getElementTexts(page, "div.css-1yxx6id");
     const matchingSentences = findMatchingSentences(elementTexts, userInput);
 
     // Clear the console
     console.clear();
-
     if (matchingSentences.length > 0) {
       console.log(
         `${dd}/${mm}/${yy} ${h}:${m}:${s} | ${matchingSentences.length} Data found:\n`
