@@ -19,6 +19,15 @@ function getCurrentDateTime() {
   return [date, month, year, hours, minutes, seconds];
 }
 
+function findMatchingSentences(elementTexts, userInput) {
+  return elementTexts
+    .map((text) => {
+      const matchedInputs = userInput.filter((input) => text.includes(input));
+      return { text, matchedInputs };
+    })
+    .filter((obj) => obj.matchedInputs.length > 0);
+}
+
 async function test() {
   const browser = await playwright.chromium.launch({ headless: false }); // if true, browser will run in background
   const page = await browser.newPage();
@@ -38,25 +47,16 @@ async function test() {
     const halfLength = Math.ceil(elementTexts.length / 2);
     elementTexts.splice(-halfLength);
 
-    // Periksa apakah ada kalimat yang sesuai dengan input pengguna
-    const matchingSentences = elementTexts.map((text) => {
-      const matchedInputs = userInput.filter((input) => text.includes(input));
-      return { text, matchedInputs };
-    });
-
-    // Filter and log the objects with non-empty matchedInputs
-    const nonEmptyMatches = matchingSentences.filter(
-      (obj) => obj.matchedInputs.length > 0
-    );
+    const matchingSentences = findMatchingSentences(elementTexts, userInput);
 
     // Clear the console
     console.clear();
 
-    if (nonEmptyMatches.length > 0) {
+    if (matchingSentences.length > 0) {
       console.log(
-        `${dd}/${mm}/${yy} ${h}:${m}:${s} | ${nonEmptyMatches.length} Data found:\n`
+        `${dd}/${mm}/${yy} ${h}:${m}:${s} | ${matchingSentences.length} Data found:\n`
       );
-      nonEmptyMatches.map((data) =>
+      matchingSentences.map((data) =>
         console.log(
           `    [ "${data.matchedInputs}" ]
     ${data.text}
