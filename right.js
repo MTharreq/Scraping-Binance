@@ -24,10 +24,12 @@ async function test() {
   const page = await browser.newPage();
 
   while (true) {
+    // Get current time
     const [dd, mm, yy, h, m, s] = getCurrentDateTime();
 
     await page.goto(url);
 
+    // Get a list of element div
     const elementTexts = await page.$$eval("div.css-1yxx6id", (els) =>
       els.map((el) => el.textContent)
     );
@@ -58,13 +60,11 @@ async function test() {
         console.log(
           `    [ "${data.matchedInputs}" ]
     ${data.text}
-          `
+`
         )
       );
     } else {
-      console.log(
-        `\n ${date} ${hours}:${minutes}:${seconds} | Data tidak ditemukan`
-      );
+      console.log(`\n ${dd}/${mm}/${yy} ${h}:${m}:${s} | Data tidak ditemukan`);
     }
 
     // Wait before page got reloaded
