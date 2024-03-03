@@ -7,18 +7,24 @@ const url =
 // CHANGE OR UPDATE USER INPUT
 const userInput = ["Will List", "on Binance Launchpool!"];
 
+function getCurrentDateTime() {
+  const now = new Date();
+  const date = now.getDate();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  return [date, month, year, hours, minutes, seconds];
+}
+
 async function test() {
-  const browser = await playwright.chromium.launch({ headless: false });
+  const browser = await playwright.chromium.launch({ headless: false }); // if true, browser will run in background
   const page = await browser.newPage();
 
   while (true) {
-    const now = new Date();
-    const date = now.getDate();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const [dd, mm, yy, h, m, s] = getCurrentDateTime();
 
     await page.goto(url);
 
@@ -46,7 +52,7 @@ async function test() {
 
     if (nonEmptyMatches.length > 0) {
       console.log(
-        `${date}/${month}/${year} ${hours}:${minutes}:${seconds} | ${nonEmptyMatches.length} Data found:\n`
+        `${dd}/${mm}/${yy} ${h}:${m}:${s} | ${nonEmptyMatches.length} Data found:\n`
       );
       nonEmptyMatches.map((data) =>
         console.log(
